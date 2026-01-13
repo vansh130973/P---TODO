@@ -11,205 +11,73 @@
 
 <body class="bg-light">
   <div id="registerSection" class="container py-5">
-    <div class="row justify-content-center">
-      <h3 class="text-center">Register</h3>
-      <form id="registerForm">
-        <div class="mb-3">
-          <label>Username <span class="text-danger">*</span></label>
-          <input class="form-control" id="regUsername" required>
-        </div>
-        <div class="mb-3">
-          <label>Password <span class="text-danger">*</span></label>
-          <input type="password" class="form-control" id="regPassword" required>
-        </div>
-        <div class="mb-3">
-          <label>Confirm Password <span class="text-danger">*</span></label>
-          <input type="password" class="form-control" id="regConfirmPassword" required>
-        </div>
-        <button class="btn btn-primary w-100">Register</button>
-        <div class="text-center mt-3">
-          <a href="#" id="showLogin">Already have account? Login</a>
-        </div>
-      </form>
-    </div>
+    <h3 class="text-center">Register</h3>
+    <form id="registerForm">
+      <div class="mb-3">
+        <label>Username *</label>
+        <input class="form-control" id="regUsername" required>
+      </div>
+      <div class="mb-3">
+        <label>Password *</label>
+        <input type="password" class="form-control" id="regPassword" required>
+      </div>
+      <div class="mb-3">
+        <label>Confirm Password *</label>
+        <input type="password" class="form-control" id="regConfirmPassword" required>
+      </div>
+      <button class="btn btn-primary w-100">Register</button>
+      <div class="text-center mt-3">
+        <a href="#" id="showLogin">Already have account? Login</a>
+      </div>
+    </form>
   </div>
 
   <div id="loginSection" class="container py-5 d-none">
-    <div class="row justify-content-center">
-      <h3 class="text-center">Login</h3>
-      <form id="loginForm">
-        <div class="mb-3">
-          <label>Username <span class="text-danger">*</span></label>
-          <input class="form-control" id="lUsername" required>
-        </div>
-        <div class="mb-3">
-          <label>Password <span class="text-danger">*</span></label>
-          <input type="password" class="form-control" id="lPassword" required>
-        </div>
-        <button class="btn btn-primary w-100">Login</button>
-        <div class="text-center mt-3">
-          <a href="#" id="showRegister">Create new account</a>
-        </div>
-      </form>
-    </div>
+    <h3 class="text-center">Login</h3>
+    <form id="loginForm">
+      <div class="mb-3">
+        <label>Username *</label>
+        <input class="form-control" id="lUsername" required>
+      </div>
+      <div class="mb-3">
+        <label>Password *</label>
+        <input type="password" class="form-control" id="lPassword" required>
+      </div>
+      <button class="btn btn-primary w-100">Login</button>
+      <div class="text-center mt-3">
+        <a href="#" id="showRegister">Create new account</a>
+      </div>
+    </form>
   </div>
 
   <div id="todoSection" class="container py-4 d-none">
-    <div class="d-flex justify-content-between align-items-center mb-3">
+    <div class="d-flex justify-content-between mb-3">
       <h3>My Todos</h3>
       <button class="btn btn-danger btn-sm" id="logoutBtn">Logout</button>
     </div>
+
     <form id="todoForm" class="mb-3">
       <div class="input-group">
-        <input class="form-control" id="todoInput" placeholder="Enter todo..." required>
+        <input class="form-control" id="todoInput" required>
         <button class="btn btn-primary">Add</button>
       </div>
     </form>
-    <div class="table-responsive">
-      <table class="table table-bordered align-middle">
-        <thead class="table-dark">
-          <tr>
-            <th>#</th>
-            <th>Date</th>
-            <th>Todo</th>
-            <th>Actions</th>
-          </tr>
-        </thead>
-        <tbody id="todoList"></tbody>
-      </table>
-    </div>
+
+    <table class="table table-bordered">
+      <thead class="table-dark">
+        <tr>
+          <th>#</th>
+          <th>Date</th>
+          <th>Todo</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody id="todoList"></tbody>
+    </table>
   </div>
 
   <script src="https://code.jquery.com/jquery-3.7.1.min.js"></script>
-  <script>
-    $(function () {
-
-      let currentUser = localStorage.getItem('loggedInUser');
-      if (currentUser) showTodoSection();
-
-      $('#showLogin').click(e => {
-        e.preventDefault();
-        $('#registerSection').addClass('d-none');
-        $('#loginSection').removeClass('d-none');
-      });
-
-      $('#showRegister').click(e => {
-        e.preventDefault();
-        $('#loginSection').addClass('d-none');
-        $('#registerSection').removeClass('d-none');
-      });
-
-      $('#registerForm').submit(function (e) {
-        e.preventDefault();
-        const user = regUsername.value.trim();
-        const password = regPassword.value;
-        if (password !== regConfirmPassword.value) return alert('Password mismatch');
-
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        if (users[user]) return alert('User exists');
-
-        users[user] = { password: password };
-        localStorage.setItem('users', JSON.stringify(users));
-
-        const todos = JSON.parse(localStorage.getItem('todos') || '{}');
-        todos[user] = [];
-        localStorage.setItem('todos', JSON.stringify(todos));
-
-        alert('Registered successfully');
-        $('#showLogin').click();
-        this.reset();
-      });
-
-      $('#loginForm').submit(function (e) {
-        e.preventDefault();
-        const users = JSON.parse(localStorage.getItem('users') || '{}');
-        if (!users[lUsername.value] || users[lUsername.value].password !== lPassword.value)
-          return alert('Invalid login Details');
-
-        currentUser = lUsername.value;
-        localStorage.setItem('loggedInUser', currentUser);
-        showTodoSection();
-      });
-
-      $('#logoutBtn').click(() => {
-        localStorage.removeItem('loggedInUser');
-        location.reload();
-      });
-
-      $('#todoForm').submit(function (e) {
-        e.preventDefault();
-        const todos = JSON.parse(localStorage.getItem('todos'));
-        todos[currentUser].push({
-          id: Date.now(),
-          text: todoInput.value,
-          date: new Date().toLocaleString()
-        });
-        localStorage.setItem('todos', JSON.stringify(todos));
-        todoInput.value = '';
-        renderTodos();
-      });
-
-      $(document).on('click', '.delete-btn', function () {
-        const id = $(this).closest('tr').data('id');
-        const todos = JSON.parse(localStorage.getItem('todos'));
-        todos[currentUser] = todos[currentUser].filter(todo => todo.id !== id);
-        localStorage.setItem('todos', JSON.stringify(todos));
-        renderTodos();
-      });
-
-      $(document).on('click', '.edit-btn', function () {
-        const row = $(this).closest('tr');
-        row.find('.todo-text').addClass('d-none');
-        row.find('.edit-input').removeClass('d-none').focus();
-        row.find('.edit-btn').addClass('d-none');
-        row.find('.save-btn').removeClass('d-none');
-      });
-
-      $(document).on('click', '.save-btn', function () {
-        const row = $(this).closest('tr');
-        const id = row.data('id');
-        const newText = row.find('.edit-input').val().trim();
-        if (!newText) return;
-
-        const todos = JSON.parse(localStorage.getItem('todos'));
-        const todo = todos[currentUser].find(todo => todo.id === id);
-        todo.text = newText;
-
-        localStorage.setItem('todos', JSON.stringify(todos));
-        renderTodos();
-      });
-
-      function showTodoSection() {
-        $('#registerSection,#loginSection').addClass('d-none');
-        $('#todoSection').removeClass('d-none');
-        renderTodos();
-      }
-
-      function renderTodos() {
-        const todos = JSON.parse(localStorage.getItem('todos'))[currentUser] || [];
-        if (!todos.length) {
-          todoList.innerHTML = `<tr><td colspan="4" class="text-center text-muted">No todos</td></tr>`;
-          return;
-        }
-
-        todoList.innerHTML = todos.map((todo, i) => `
-      <tr data-id="${todo.id}">
-        <td>${i + 1}</td>
-        <td>${todo.date}</td>
-        <td>
-          <span class="todo-text">${todo.text}</span>
-          <input class="form-control form-control-sm edit-input d-none" value="${todo.text}">
-        </td>
-        <td>
-          <button class="btn btn-warning btn-sm edit-btn">Edit</button>
-          <button class="btn btn-success btn-sm save-btn d-none">Save</button>
-          <button class="btn btn-danger btn-sm delete-btn">Delete</button>
-        </td>
-      </tr>
-    `).join('');
-      }
-    });
-  </script>
+  <script type="module" src="./js/main.js"></script>
 </body>
 
 </html>
